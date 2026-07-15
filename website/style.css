@@ -204,6 +204,10 @@ button{
     margin-bottom:8px;
 }
 
+.day-card ol{
+    margin-left:20px;
+}
+
 @media(max-width:600px){
 
     .member-card{
