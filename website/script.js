@@ -149,10 +149,12 @@ async function generateMealPlan() {
         const response = await requestMealPlan(mealRequest);
 
         if (response.error) {
-
-            throw new Error(response.error);
-
-        }
+    throw new Error(
+        response.details
+            ? `${response.error}\n\n${JSON.stringify(response.details, null, 2)}`
+            : response.error
+    );
+}
 
         renderMealPlan(response);
 
