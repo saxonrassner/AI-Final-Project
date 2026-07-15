@@ -22,14 +22,14 @@ const addMemberBtn = document.getElementById("addMember");
 const memberListEl = document.getElementById("memberList");
 
 const budgetAmountInput = document.getElementById("budgetAmount");
+const breakfastInput = document.getElementById("breakfast");
+const lunchInput = document.getElementById("lunch");
+const dinnerInput = document.getElementById("dinner");
 
 const generateBtn = document.getElementById("generateMealPlan");
 
 const mealPlanEl = document.getElementById("mealPlan");
 const groceryListEl = document.getElementById("groceryList");
-const breakfastInput = document.getElementById("breakfast");
-const lunchInput = document.getElementById("lunch");
-const dinnerInput = document.getElementById("dinner");
 
 // ------------------------------------------------------------
 // Member Management
