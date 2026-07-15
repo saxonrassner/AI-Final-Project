@@ -62,8 +62,8 @@ Return exactly this JSON structure:
     "totalParticipants": 0,
     "sharedMealPercentage": 0,
     "substitutionCount": 0,
-    "compatibilityScore": 0,
-    "estimatedBudget": "string",
+    "compatibilityScore": _/100,
+    "estimatedBudget": $price,
     "ingredientReuseScore": 0
   }},
   "conflictSummary": {{
