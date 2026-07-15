@@ -49,6 +49,8 @@ RULES:
 8. Do not claim that a meal diagnoses, treats, prevents, or cures a medical condition.
 9. Clearly explain any conflicts and how they were resolved.
 10. Return JSON only. Do not use markdown or code fences.
+11. Generate meals only for the meal types listed in mealTypes.
+12. Create one selected meal type per day for 7 days.
 
 Return exactly this JSON structure:
 
