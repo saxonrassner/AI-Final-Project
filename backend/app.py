@@ -1,16 +1,20 @@
 import json
 import os
+from pathlib import Path
 from typing import Any
 
 import requests
 from dotenv import load_dotenv
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
 
 load_dotenv()
 
-app = Flask(__name__)
+BASE_DIR = Path(__file__).resolve().parent
+WEBSITE_DIR = BASE_DIR.parent / "website"
+
+app = Flask(__name__, static_folder=str(WEBSITE_DIR))
 CORS(app)
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
