@@ -134,16 +134,21 @@ async function generateMealPlan() {
     setLoadingState(true);
 
     const mealRequest = {
+    groupName: "My Group",
 
-        groupName: "My Group",
+    participants: members,
 
-        participants: members,
+    budget: {
+        level: budgetSelect.value || "none",
+        targetPerPerson: budgetAmountInput.value || null
+    },
 
-        budget: {
-          targetPerPerson: Number(budgetAmountInput.value) || null
-        }
-
-    };
+    mealTypes: [
+        breakfastInput.checked ? "Breakfast" : null,
+        lunchInput.checked ? "Lunch" : null,
+        dinnerInput.checked ? "Dinner" : null
+    ].filter(Boolean)
+};
 
     try {
 
