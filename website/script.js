@@ -6,7 +6,7 @@
    note at the bottom of this file before you deploy.
    ============================================================ */
 
-const ANTHROPIC_API_KEY = "YOUR_API_KEY_HERE"; // <-- put your key here
+const ANTHROPIC_API_KEY = "API_URL"; // <-- put your key here
 const ANTHROPIC_MODEL = "claude-sonnet-4-6";
 
 // ------------------------------------------------------------
