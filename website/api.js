@@ -3,7 +3,9 @@
 // Handles communication between the frontend and Flask backend.
 // ============================================================
 
-const API_URL = "http://127.0.0.1:5000";
+const API_URL = window.location.hostname.includes("app.github.dev")
+    ? `${window.location.protocol}//${window.location.hostname.replace("-8000.", "-5000.")}`
+    : "http://127.0.0.1:5000";
 
 /**
  * Sends the family's meal planning information to the backend.
