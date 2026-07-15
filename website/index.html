@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MealSync AI</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>🍽️ MealSync AI</h1>
+        <p>Create meal plans for multiple people with different dietary needs.</p>
+    </header>
+
+    <main>
+
+        <!-- Add Member -->
+        <section class="card">
+
+            <h2>Add Group Member</h2>
+
+            <div class="form-grid">
+
+                <input type="text" id="name" placeholder="Name">
+
+                <select id="diet">
+                    <option value="">Diet Preference</option>
+                    <option>None</option>
+                    <option>Vegetarian</option>
+                    <option>Vegan</option>
+                    <option>Gluten-Free</option>
+                    <option>Keto</option>
+                    <option>Halal</option>
+                </select>
+
+                <input type="text" id="allergies" placeholder="Allergies">
+
+                <input type="text" id="preferences" placeholder="Favorite Foods">
+
+            </div>
+
+            <button id="addMember">
+                Add Member
+            </button>
+
+        </section>
+
+        <!-- Members -->
+        <section class="card">
+
+            <h2>Group Members</h2>
+
+            <div id="memberList">
+
+                <p class="empty">
+                    No members added yet.
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- Generate -->
+        <section class="center">
+
+            <button id="generateMealPlan" class="generate">
+                Generate Meal Plan
+            </button>
+
+        </section>
+
+        <!-- Meal Plan -->
+        <section class="card">
+
+            <h2>Weekly Meal Plan</h2>
+
+            <div id="mealPlan">
+
+                <p class="empty">
+                    Your AI meal plan will appear here.
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- Grocery List -->
+        <section class="card">
+
+            <h2>Grocery List</h2>
+
+            <div id="groceryList">
+
+                <p class="empty">
+                    Grocery list will appear here.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>
