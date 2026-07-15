@@ -27,6 +27,9 @@ const generateBtn = document.getElementById("generateMealPlan");
 
 const mealPlanEl = document.getElementById("mealPlan");
 const groceryListEl = document.getElementById("groceryList");
+const breakfastInput = document.getElementById("breakfast");
+const lunchInput = document.getElementById("lunch");
+const dinnerInput = document.getElementById("dinner");
 
 // ------------------------------------------------------------
 // Member Management
