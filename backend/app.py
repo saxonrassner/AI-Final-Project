@@ -138,15 +138,23 @@ def parse_model_json(content: str) -> dict[str, Any]:
 
 
 @app.get("/")
-def health_check():
-    """Simple route to confirm the backend is running."""
+def home():
+    return send_from_directory(WEBSITE_DIR, "index.html")
 
+
+@app.get("/health")
+def health_check():
     return jsonify(
         {
             "status": "ok",
             "message": "MealSync AI backend is running.",
         }
     )
+
+
+@app.get("/<path:filename>")
+def website_files(filename):
+    return send_from_directory(WEBSITE_DIR, filename)
 
 
 @app.post("/generate-plan")
