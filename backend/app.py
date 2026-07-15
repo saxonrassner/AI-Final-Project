@@ -1,20 +1,16 @@
 import json
 import os
-from pathlib import Path
 from typing import Any
 
 import requests
 from dotenv import load_dotenv
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 
 load_dotenv()
 
-BASE_DIR = Path(__file__).resolve().parent
-WEBSITE_DIR = BASE_DIR.parent / "website"
-
-app = Flask(__name__, static_folder=str(WEBSITE_DIR))
+app = Flask(__name__)
 CORS(app)
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
@@ -48,7 +44,7 @@ RULES:
 3. Maximize how many participants can share each base meal.
 4. Prefer optional toppings or small substitutions over completely separate meals.
 5. Reuse ingredients across meals to reduce cost and food waste.
-6. Stay within the requested budget however, if the budget is less than 10 dollars per person, ask the user to enter a different budget because the minimum budget is 10 dollars per person.
+6. Stay within the requested budget and preparation time.
 7. Consider dislikes, favorite foods, cuisines, and nutrition goals.
 8. Do not claim that a meal diagnoses, treats, prevents, or cures a medical condition.
 9. Clearly explain any conflicts and how they were resolved.
@@ -62,8 +58,8 @@ Return exactly this JSON structure:
     "totalParticipants": 0,
     "sharedMealPercentage": 0,
     "substitutionCount": 0,
-    "compatibilityScore": _/100,
-    "estimatedBudget": $price,
+    "compatibilityScore": 0,
+    "estimatedBudget": "string",
     "ingredientReuseScore": 0
   }},
   "conflictSummary": {{
@@ -138,23 +134,15 @@ def parse_model_json(content: str) -> dict[str, Any]:
 
 
 @app.get("/")
-def home():
-    return send_from_directory(WEBSITE_DIR, "index.html")
-
-@app.get("/health")
 def health_check():
+    """Simple route to confirm the backend is running."""
+
     return jsonify(
         {
             "status": "ok",
             "message": "MealSync AI backend is running.",
         }
     )
-
-
-
-@app.get("/<path:filename>")
-def website_files(filename):
-    return send_from_directory(WEBSITE_DIR, filename)
 
 
 @app.post("/generate-plan")
