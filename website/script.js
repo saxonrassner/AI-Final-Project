@@ -145,44 +145,43 @@ async function generateMealPlan() {
 
     try {
 
-    const mealRequest = {
-        groupName: "My Group",
-        participants: members,
-        budget: {
-            targetPerPerson: budgetAmountInput.value || null
+        const response = await requestMealPlan(mealRequest);
+
+        if (response.error) {
+
+            throw new Error(response.error);
+
         }
-    };
 
-    const response = await requestMealPlan(mealRequest);
+        renderMealPlan(response);
 
-    if (response.error) {
-        throw new Error(response.error);
+        renderGroceryList(response.groceryList);
+
     }
 
-    renderMealPlan(response);
-    renderGroceryList(response.groceryList);
+    catch (error) {
 
-}
-catch (error) {
+        console.error(error);
 
-    console.error(error);
+        mealPlanEl.innerHTML = `
+            <p class="empty">
+                ${escapeHtml(error.message)}
+            </p>
+        `;
 
-    mealPlanEl.innerHTML = `
-        <p class="empty">
-            ${escapeHtml(error.message)}
-        </p>
-    `;
+        groceryListEl.innerHTML = `
+            <p class="empty">
+                Grocery list will appear here.
+            </p>
+        `;
 
-    groceryListEl.innerHTML = `
-        <p class="empty">
-            Grocery list will appear here.
-        </p>
-    `;
+    }
 
-}
-finally {
+    finally {
 
-    setLoadingState(false);
+        setLoadingState(false);
+
+    }
 
 }
 
