@@ -1,1 +1,1 @@
-# AI-Final-Project
+# MealSync AI
