@@ -1,13 +1,9 @@
-/* ============================================================
-   MealSync AI — script.js
-   ============================================================
-   IMPORTANT: Set your Anthropic API key below. Since this key
-   will be shipped to every visitor's browser, see the security
-   note at the bottom of this file before you deploy.
-   ============================================================ */
-
-const ANTHROPIC_API_KEY = "API_URL"; // <-- put your key here
-const ANTHROPIC_MODEL = "claude-sonnet-4-6";
+// ============================================================
+// MealSync AI
+// script.js
+// Frontend logic only.
+// AI requests are handled by api.js -> Flask backend.
+// ============================================================
 
 // ------------------------------------------------------------
 // State
@@ -15,12 +11,13 @@ const ANTHROPIC_MODEL = "claude-sonnet-4-6";
 let members = [];
 
 // ------------------------------------------------------------
-// DOM references
+// DOM References
 // ------------------------------------------------------------
 const nameInput = document.getElementById("name");
 const dietSelect = document.getElementById("diet");
 const allergiesInput = document.getElementById("allergies");
 const preferencesInput = document.getElementById("preferences");
+
 const addMemberBtn = document.getElementById("addMember");
 const memberListEl = document.getElementById("memberList");
 
@@ -28,13 +25,15 @@ const budgetSelect = document.getElementById("budget");
 const budgetAmountInput = document.getElementById("budgetAmount");
 
 const generateBtn = document.getElementById("generateMealPlan");
+
 const mealPlanEl = document.getElementById("mealPlan");
 const groceryListEl = document.getElementById("groceryList");
 
 // ------------------------------------------------------------
-// Member management
+// Member Management
 // ------------------------------------------------------------
 function addMember() {
+
     const name = nameInput.value.trim();
     const diet = dietSelect.value;
     const allergies = allergiesInput.value.trim();
@@ -47,7 +46,7 @@ function addMember() {
 
     members.push({
         id: Date.now(),
-        name,
+        name: name,
         diet: diet || "None",
         allergies: allergies || "None",
         preferences: preferences || "None"
@@ -62,221 +61,374 @@ function addMember() {
 }
 
 function removeMember(id) {
-    members = members.filter((m) => m.id !== id);
+
+    members = members.filter(member => member.id !== id);
+
     renderMembers();
+
 }
 
 function renderMembers() {
+
     if (members.length === 0) {
-        memberListEl.innerHTML = `<p class="empty">No members added yet.</p>`;
+
+        memberListEl.innerHTML =
+            `<p class="empty">No members added yet.</p>`;
+
         return;
     }
 
-    memberListEl.innerHTML = members
-        .map(
-            (m) => `
-        <div class="member-card" data-id="${m.id}">
+    memberListEl.innerHTML = members.map(member => `
+
+        <div class="member-card">
+
             <div class="member-info">
-                <strong>${escapeHtml(m.name)}</strong>
-                <span>Diet: ${escapeHtml(m.diet)}</span>
-                <span>Allergies: ${escapeHtml(m.allergies)}</span>
-                <span>Favorites: ${escapeHtml(m.preferences)}</span>
+
+                <strong>${escapeHtml(member.name)}</strong>
+
+                <span>Diet: ${escapeHtml(member.diet)}</span>
+
+                <span>Allergies: ${escapeHtml(member.allergies)}</span>
+
+                <span>Favorites: ${escapeHtml(member.preferences)}</span>
+
             </div>
-            <button class="remove-member" data-id="${m.id}">✕</button>
+
+            <button
+                class="remove-member"
+                data-id="${member.id}">
+                ✕
+            </button>
+
         </div>
-    `
-        )
-        .join("");
 
-    document.querySelectorAll(".remove-member").forEach((btn) => {
-        btn.addEventListener("click", (e) => {
-            const id = Number(e.currentTarget.getAttribute("data-id"));
-            removeMember(id);
+    `).join("");
+
+    document.querySelectorAll(".remove-member").forEach(button => {
+
+        button.addEventListener("click", function () {
+
+            removeMember(Number(this.dataset.id));
+
         });
-    });
-}
 
-function escapeHtml(str) {
-    const div = document.createElement("div");
-    div.textContent = str;
-    return div.innerHTML;
+    });
+
 }
 
 // ------------------------------------------------------------
-// Meal plan generation
+// Generate Meal Plan
 // ------------------------------------------------------------
 async function generateMealPlan() {
-    if (members.length === 0) {
-        alert("Add at least one group member first.");
-        return;
-    }
 
-    const budgetLevel = budgetSelect.value;
-    const budgetAmount = budgetAmountInput.value.trim();
+    if (members.length === 0) {
+
+        alert("Please add at least one group member.");
+
+        return;
+
+    }
 
     setLoadingState(true);
 
+    const mealRequest = {
+
+        groupName: "My Group",
+
+        participants: members,
+
+        budget: {
+            level: budgetSelect.value || "none",
+            targetPerPerson: budgetAmountInput.value || null
+        }
+
+    };
+
     try {
-        const prompt = buildPrompt(members, budgetLevel, budgetAmount);
-        const response = await callClaude(prompt);
-        const data = parseModelJson(response);
-        renderMealPlan(data.mealPlan);
-        renderGroceryList(data.groceryList);
-    } catch (err) {
-        console.error(err);
-        mealPlanEl.innerHTML = `<p class="empty">Something went wrong generating your meal plan. Please try again.</p>`;
-        groceryListEl.innerHTML = `<p class="empty">Grocery list will appear here.</p>`;
-    } finally {
+
+        const response = await requestMealPlan(mealRequest);
+
+        if (response.error) {
+
+            throw new Error(response.error);
+
+        }
+
+        renderMealPlan(response);
+
+        renderGroceryList(response.groceryList);
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        mealPlanEl.innerHTML = `
+            <p class="empty">
+                ${escapeHtml(error.message)}
+            </p>
+        `;
+
+        groceryListEl.innerHTML = `
+            <p class="empty">
+                Grocery list will appear here.
+            </p>
+        `;
+
+    }
+
+    finally {
+
         setLoadingState(false);
+
     }
+
 }
 
-function buildPrompt(members, budgetLevel, budgetAmount) {
-    const budgetText = budgetAmount
-        ? `Target budget: approximately $${budgetAmount} per person for the week.`
-        : budgetLevel
-        ? `Budget level: ${budgetLevel}.`
-        : "No specific budget constraint given.";
+// ------------------------------------------------------------
+// Utility
+// ------------------------------------------------------------
+function escapeHtml(text) {
 
-    const memberText = members
-        .map(
-            (m, i) =>
-                `${i + 1}. ${m.name} — Diet: ${m.diet}; Allergies: ${m.allergies}; Favorite foods: ${m.preferences}`
-        )
-        .join("\n");
+    const div = document.createElement("div");
 
-    return `You are a meal planning assistant. Create a 7-day meal plan (breakfast, lunch, dinner) for the following group of people, respecting each person's diet, allergies, and preferences. Where diets conflict, suggest shared meals that work for everyone when possible, and note substitutions when needed.
+    div.textContent = text;
 
-Group members:
-${memberText}
+    return div.innerHTML;
 
-${budgetText}
+}
+// ------------------------------------------------------------
+// Render Meal Plan
+// ------------------------------------------------------------
+function renderMealPlan(data) {
 
-Respond with ONLY valid JSON (no markdown fences, no commentary) matching exactly this shape:
+    if (!data.meals || data.meals.length === 0) {
 
-{
-  "mealPlan": [
-    {
-      "day": "Monday",
-      "breakfast": "string",
-      "lunch": "string",
-      "dinner": "string",
-      "notes": "string (any substitutions or per-person notes, or empty string)"
+        mealPlanEl.innerHTML =
+            `<p class="empty">No meal plan generated.</p>`;
+
+        return;
+
     }
-  ],
-  "groceryList": [
-    { "category": "Produce", "items": ["item 1", "item 2"] },
-    { "category": "Proteins", "items": ["item 1"] }
-  ]
-}
 
-Include all 7 days. Keep meal descriptions concise (under 12 words each).`;
-}
+    let html = "";
 
-async function callClaude(prompt) {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "x-api-key": ANTHROPIC_API_KEY,
-            "anthropic-version": "2023-06-01",
-            "anthropic-dangerous-direct-browser-access": "true"
-        },
-        body: JSON.stringify({
-            model: ANTHROPIC_MODEL,
-            max_tokens: 4000,
-            messages: [{ role: "user", content: prompt }]
-        })
+    // Optional summary
+    if (data.planSummary) {
+
+        html += `
+            <div class="day-card">
+
+                <h3>Plan Summary</h3>
+
+                <p><strong>Participants:</strong> ${data.planSummary.totalParticipants}</p>
+
+                <p><strong>Compatibility:</strong> ${data.planSummary.compatibilityScore}%</p>
+
+                <p><strong>Shared Meals:</strong> ${data.planSummary.sharedMealPercentage}%</p>
+
+                <p><strong>Estimated Budget:</strong> ${escapeHtml(data.planSummary.estimatedBudget)}</p>
+
+            </div>
+        `;
+
+    }
+
+    data.meals.forEach(meal => {
+
+        html += `
+
+            <div class="day-card">
+
+                <h3>
+                    Day ${meal.day} - ${escapeHtml(meal.mealType)}
+                </h3>
+
+                <p>
+                    <strong>${escapeHtml(meal.name)}</strong>
+                </p>
+
+                <p>
+                    ${escapeHtml(meal.description)}
+                </p>
+
+                <br>
+
+                <p>
+                    <strong>Prep Time:</strong>
+                    ${meal.prepMinutes} minutes
+                </p>
+
+                <p>
+                    <strong>Estimated Cost:</strong>
+                    ${escapeHtml(meal.estimatedCost)}
+                </p>
+
+                <p>
+                    <strong>Servings:</strong>
+                    ${meal.servings}
+                </p>
+
+        `;
+
+        if (meal.ingredients && meal.ingredients.length > 0) {
+
+            html += "<h4>Ingredients</h4><ul>";
+
+            meal.ingredients.forEach(item => {
+
+                html += `
+                    <li>
+                        ${escapeHtml(item.quantity)}
+                        ${escapeHtml(item.name)}
+                    </li>
+                `;
+
+            });
+
+            html += "</ul>";
+
+        }
+
+        if (meal.instructions && meal.instructions.length > 0) {
+
+            html += "<h4>Instructions</h4><ol>";
+
+            meal.instructions.forEach(step => {
+
+                html += `
+                    <li>${escapeHtml(step)}</li>
+                `;
+
+            });
+
+            html += "</ol>";
+
+        }
+
+        if (meal.substitutions && meal.substitutions.length > 0) {
+
+            html += "<h4>Substitutions</h4><ul>";
+
+            meal.substitutions.forEach(sub => {
+
+                html += `
+                    <li>
+
+                        <strong>${escapeHtml(sub.participantOrCategory)}</strong>:
+                        Replace
+                        ${escapeHtml(sub.originalIngredient)}
+                        with
+                        ${escapeHtml(sub.replacement)}
+
+                    </li>
+                `;
+
+            });
+
+            html += "</ul>";
+
+        }
+
+        html += "</div>";
+
     });
 
-    if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`API request failed: ${res.status} ${errText}`);
-    }
+    mealPlanEl.innerHTML = html;
 
-    const data = await res.json();
-    return data.content
-        .map((block) => (block.type === "text" ? block.text : ""))
-        .filter(Boolean)
-        .join("\n");
-}
-
-function parseModelJson(text) {
-    const cleaned = text.replace(/```json/gi, "").replace(/```/g, "").trim();
-    return JSON.parse(cleaned);
 }
 
 // ------------------------------------------------------------
-// Rendering results
+// Render Grocery List
 // ------------------------------------------------------------
-function renderMealPlan(mealPlan) {
-    if (!mealPlan || mealPlan.length === 0) {
-        mealPlanEl.innerHTML = `<p class="empty">No meal plan generated.</p>`;
-        return;
-    }
-
-    mealPlanEl.innerHTML = mealPlan
-        .map(
-            (day) => `
-        <div class="day-card">
-            <h3>${escapeHtml(day.day)}</h3>
-            <ul>
-                <li><strong>Breakfast:</strong> ${escapeHtml(day.breakfast)}</li>
-                <li><strong>Lunch:</strong> ${escapeHtml(day.lunch)}</li>
-                <li><strong>Dinner:</strong> ${escapeHtml(day.dinner)}</li>
-            </ul>
-            ${day.notes ? `<p class="day-notes">${escapeHtml(day.notes)}</p>` : ""}
-        </div>
-    `
-        )
-        .join("");
-}
-
 function renderGroceryList(groceryList) {
+
     if (!groceryList || groceryList.length === 0) {
-        groceryListEl.innerHTML = `<p class="empty">No grocery list generated.</p>`;
+
+        groceryListEl.innerHTML =
+            `<p class="empty">No grocery list generated.</p>`;
+
         return;
+
     }
 
-    groceryListEl.innerHTML = groceryList
-        .map(
-            (cat) => `
-        <div class="grocery-category">
-            <h3>${escapeHtml(cat.category)}</h3>
-            <ul>
-                ${cat.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
-            </ul>
-        </div>
-    `
-        )
-        .join("");
+    let html = "";
+
+    groceryList.forEach(category => {
+
+        html += `
+
+            <div class="grocery-category">
+
+                <h3>${escapeHtml(category.category)}</h3>
+
+                <ul>
+
+        `;
+
+        category.items.forEach(item => {
+
+            html += `
+
+                <li>
+
+                    ${escapeHtml(item.quantity)}
+                    ${escapeHtml(item.name)}
+
+                    ${item.substitutionOnly
+                        ? " (Substitution Only)"
+                        : ""}
+
+                </li>
+
+            `;
+
+        });
+
+        html += `
+                </ul>
+            </div>
+        `;
+
+    });
+
+    groceryListEl.innerHTML = html;
+
 }
 
+// ------------------------------------------------------------
+// Loading State
+// ------------------------------------------------------------
 function setLoadingState(isLoading) {
+
     generateBtn.disabled = isLoading;
-    generateBtn.textContent = isLoading ? "Generating..." : "Generate Meal Plan";
+
+    generateBtn.textContent = isLoading
+        ? "Generating..."
+        : "Generate Meal Plan";
 
     if (isLoading) {
-        mealPlanEl.innerHTML = `<p class="empty">Generating your meal plan...</p>`;
-        groceryListEl.innerHTML = `<p class="empty">Generating your grocery list...</p>`;
+
+        mealPlanEl.innerHTML = `
+            <p class="empty">
+                Generating your meal plan...
+            </p>
+        `;
+
+        groceryListEl.innerHTML = `
+            <p class="empty">
+                Generating your grocery list...
+            </p>
+        `;
+
     }
+
 }
 
 // ------------------------------------------------------------
-// Event listeners
+// Event Listeners
 // ------------------------------------------------------------
 addMemberBtn.addEventListener("click", addMember);
-generateBtn.addEventListener("click", generateMealPlan);
 
-/* ============================================================
-   SECURITY NOTE
-   ============================================================
-   Putting ANTHROPIC_API_KEY directly in this client-side file
-   means anyone who opens the page can view your key (e.g. via
-   browser dev tools) and use it at your expense. This is fine
-   for a private/local prototype, but for anything public-facing
-   the safer pattern is to proxy requests through a small backend
-   (serverless function, etc.) that holds the key server-side and
-   the browser calls instead. Keeping it here as requested — just
-   flagging it so it's a deliberate choice.
-   ============================================================ */
+generateBtn.addEventListener("click", generateMealPlan);
