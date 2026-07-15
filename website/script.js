@@ -120,6 +120,7 @@ function renderMembers() {
 // Generate Meal Plan
 // ------------------------------------------------------------
 async function generateMealPlan() {
+    console.log("Generate button clicked");
 
     if (members.length === 0) {
 
