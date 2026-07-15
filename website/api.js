@@ -1,12 +1,19 @@
+// ============================================================
+// api.js
+// Handles communication between the frontend and Flask backend.
+// ============================================================
+
 const API_URL = "http://127.0.0.1:5000";
 
 /**
- * Sends group meal-planning information to the backend.
- * @param {Object} mealRequest - The object created by mealPlanner.js
- * @returns {Promise<Object>} The meal plan returned by the backend
+ * Sends the family's meal planning information to the backend.
+ *
+ * @param {Object} mealRequest - The meal planning request object.
+ * @returns {Promise<Object>} The JSON response from the backend.
  */
 async function requestMealPlan(mealRequest) {
     try {
+
         const response = await fetch(`${API_URL}/generate-plan`, {
             method: "POST",
             headers: {
@@ -18,21 +25,19 @@ async function requestMealPlan(mealRequest) {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(
-                data?.details ||
-                data?.error ||
-                `Server error: ${response.status}`
-            );
+            throw new Error(data.error || `Server Error: ${response.status}`);
         }
 
         return data;
+
     } catch (error) {
+
         console.error("Error requesting meal plan:", error);
 
         return {
             success: false,
-            error: "Unable to generate the meal plan.",
-            details: error.message
+            error: error.message || "Unable to connect to the backend."
         };
+
     }
 }
