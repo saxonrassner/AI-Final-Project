@@ -3,7 +3,7 @@
 // Handles communication between the frontend and Flask backend.
 // ============================================================
 
-const API_URL = "http://127.0.0.1:5000";
+const API_URL = "";
 
 /**
  * Sends the family's meal planning information to the backend.
