@@ -142,16 +142,6 @@ def home():
     return send_from_directory(WEBSITE_DIR, "index.html")
 
 
-@app.get("/health")
-def health_check():
-    return jsonify(
-        {
-            "status": "ok",
-            "message": "MealSync AI backend is running.",
-        }
-    )
-
-
 @app.get("/<path:filename>")
 def website_files(filename):
     return send_from_directory(WEBSITE_DIR, filename)
