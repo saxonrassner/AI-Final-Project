@@ -21,7 +21,6 @@ const preferencesInput = document.getElementById("preferences");
 const addMemberBtn = document.getElementById("addMember");
 const memberListEl = document.getElementById("memberList");
 
-const budgetSelect = document.getElementById("budget");
 const budgetAmountInput = document.getElementById("budgetAmount");
 
 const generateBtn = document.getElementById("generateMealPlan");
@@ -139,8 +138,7 @@ async function generateMealPlan() {
         participants: members,
 
         budget: {
-            level: budgetSelect.value || "none",
-            targetPerPerson: budgetAmountInput.value || null
+            totalBudget: budgetAmountInput.value || null
         }
 
     };
