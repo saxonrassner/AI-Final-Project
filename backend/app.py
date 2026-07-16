@@ -51,7 +51,7 @@ RULES:
 9. Clearly explain any conflicts and how they were resolved.
 10. Return JSON only. Do not use markdown or code fences.
 11. Generate meals only for the meal types listed in mealTypes.
-12. Create one selected meal type per day for 7 days.
+12. Each day must include all selected meal types. If Breakfast and Dinner are selected, every day should contain both a Breakfast meal and a Dinner meal.
 
 Return exactly this JSON structure:
 
