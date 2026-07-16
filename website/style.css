@@ -226,3 +226,12 @@ button{
     }
 
 }
+
+/* Poppins font */
+body,
+button,
+input,
+select,
+textarea {
+    font-family: "Poppins", sans-serif;
+}
