@@ -230,7 +230,7 @@ function renderMealPlan(data) {
     if (data.planSummary) {
 
         html += `
-            <div class="day-card">
+           <div class="day-card ${mealClass}">
 
                 <h3>Plan Summary</h3>
 
