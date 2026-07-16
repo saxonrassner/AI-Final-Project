@@ -168,7 +168,7 @@ async function generateMealPlan() {
 
         renderMealPlan(response);
 
-        renderGroceryList(response.groceryList);
+        renderGroceryList(response.groceryList, response.groceryTotal);
 
     }
 
@@ -354,7 +354,7 @@ function renderMealPlan(data) {
 // ------------------------------------------------------------
 // Render Grocery List
 // ------------------------------------------------------------
-function renderGroceryList(groceryList) {
+function renderGroceryList(groceryList, groceryTotal) {
 
     if (!groceryList || groceryList.length === 0) {
 
@@ -367,13 +367,28 @@ function renderGroceryList(groceryList) {
 
     let html = "";
 
+    if (groceryTotal) {
+
+        html += `
+            <p class="grocery-grand-total">
+                <strong>Estimated Total:</strong> ${escapeHtml(groceryTotal)}
+            </p>
+        `;
+
+    }
+
     groceryList.forEach(category => {
 
         html += `
 
             <div class="grocery-category">
 
-                <h3>${escapeHtml(category.category)}</h3>
+                <h3>
+                    ${escapeHtml(category.category)}
+                    ${category.categoryTotal
+                        ? `<span class="category-total">${escapeHtml(category.categoryTotal)}</span>`
+                        : ""}
+                </h3>
 
                 <ul>
 
@@ -387,6 +402,12 @@ function renderGroceryList(groceryList) {
 
                     ${escapeHtml(item.quantity)}
                     ${escapeHtml(item.name)}
+
+                    ${item.lineTotal != null
+                        ? ` <span class="item-price">$${item.lineTotal.toFixed(2)}</span>`
+                        : item.priceSource === "unmatched"
+                            ? ` <span class="item-price unmatched">(price unavailable)</span>`
+                            : ""}
 
                     ${item.substitutionOnly
                         ? " (Substitution Only)"
