@@ -73,7 +73,7 @@ Return exactly this JSON structure:
   "meals": [
     {{
       "day": 1,
-      "mealType": "Dinner",
+      "mealType": "Breakfast, Lunch, or Dinner",
       "name": "string",
       "description": "string",
       "servings": 0,
