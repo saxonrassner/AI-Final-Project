@@ -22,6 +22,7 @@ const addMemberBtn = document.getElementById("addMember");
 const memberListEl = document.getElementById("memberList");
 
 const budgetAmountInput = document.getElementById("budgetAmount");
+const planLengthSelect = document.getElementById("planLength");
 const breakfastInput = document.getElementById("breakfast");
 const lunchInput = document.getElementById("lunch");
 const dinnerInput = document.getElementById("dinner");
