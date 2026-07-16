@@ -145,6 +145,7 @@ async function generateMealPlan() {
         ? Number(budgetAmountInput.value)
         : null
 },
+    numberOfDays: Number(planLengthSelect.value),
 
     mealTypes: [
         breakfastInput.checked ? "Breakfast" : null,
