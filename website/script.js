@@ -230,7 +230,7 @@ function renderMealPlan(data) {
     if (data.planSummary) {
 
         html += `
-           <div class="day-card ${mealClass}">
+            <div class="day-card">
 
                 <h3>Plan Summary</h3>
 
@@ -248,12 +248,6 @@ function renderMealPlan(data) {
     }
 
     data.meals.forEach(meal => {
-        const mealClass =
-    meal.mealType === "Breakfast"
-        ? "meal-breakfast"
-        : meal.mealType === "Lunch"
-        ? "meal-lunch"
-        : "meal-dinner";
 
         html += `
 
