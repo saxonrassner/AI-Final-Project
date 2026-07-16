@@ -139,9 +139,11 @@ async function generateMealPlan() {
     participants: members,
 
     budget: {
-        level: budgetSelect.value || "none",
-        targetPerPerson: budgetAmountInput.value || null
-    },
+    level: "custom",
+    targetPerPerson: budgetAmountInput.value
+        ? Number(budgetAmountInput.value)
+        : null
+},
 
     mealTypes: [
         breakfastInput.checked ? "Breakfast" : null,
