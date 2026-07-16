@@ -45,7 +45,7 @@ RULES:
 3. Maximize how many participants can share each base meal.
 4. Prefer optional toppings or small substitutions over completely separate meals.
 5. Reuse ingredients across meals to reduce cost and food waste.
-6. If a budget per person is provided then multiply the budget per person by total people to get an estimate of the meal cost and realistically fit within the budget. 
+6. The entered budget is per person per meal, not for the entire plan. Multiply it by the number of participants, the number of selected meal types, and the number of days to determine the total budget. Keep the estimated total cost within that budget.
 7. Consider dislikes, favorite foods, cuisines, and nutrition goals.
 8. Do not claim that a meal diagnoses, treats, prevents, or cures a medical condition.
 9. Clearly explain any conflicts and how they were resolved.
