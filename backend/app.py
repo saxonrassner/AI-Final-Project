@@ -25,6 +25,7 @@ OPENROUTER_MODEL = os.getenv(
 
 def create_meal_plan_prompt(group_data: dict[str, Any]) -> str:
     """Create the prompt sent to the AI model."""
+    number_of_days = group_data.get("numberOfDays", 1)
 
     return f"""
 You are the optimization engine for MealSync AI.
