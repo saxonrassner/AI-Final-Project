@@ -207,6 +207,26 @@ button{
 .day-card ol{
     margin-left:20px;
 }
+/* Breakfast */
+.meal-breakfast {
+    background: #FFF8CC;
+    color: #000;
+    border-left: 6px solid #F4D35E;
+}
+
+/* Lunch */
+.meal-lunch {
+    background: #EAF7EC;
+    color: #000;
+    border-left: 6px solid #81C784;
+}
+
+/* Dinner */
+.meal-dinner {
+    background: #EAF2FF;
+    color: #000;
+    border-left: 6px solid #64B5F6;
+}
 
 @media(max-width:600px){
 
