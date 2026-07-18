@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-from pricing import apply_pricing
 
 load_dotenv()
 
@@ -216,7 +215,6 @@ def generate_plan():
 
         content = response_data["choices"][0]["message"]["content"]
         meal_plan = parse_model_json(content)
-        meal_plan = apply_pricing(meal_plan)
 
         return jsonify(meal_plan)
 
